@@ -7,6 +7,11 @@ import Products from "./components/Products";
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const filteredProducts = selectedCategory
+    ? productsData.filter(
+        (product) => product.category === selectedCategory.substring(6)
+      )
+    : productsData;
   return (
     <div className="App">
       <h1>Products</h1>
@@ -15,10 +20,7 @@ function App() {
         setSelectedCategory={setSelectedCategory}
         selectedCategory={selectedCategory}
       />
-        <Products
-        productsData={productsData}
-        selectedCategory={selectedCategory}
-      />
+      <Products productsData={filteredProducts} />
     </div>
   );
 }
