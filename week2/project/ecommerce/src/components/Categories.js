@@ -1,25 +1,60 @@
-// Categories.js
-import React from 'react';
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
-const Categories = ({ categoriesData, selectedCategory, setSelectedCategory }) => {
+const Categories = ({ setSelectedCategory, selectedCategory }) => {
+  const [categoriesData, setCategoriesData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const location = useLocation();
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(
+        "https://fakestoreapi.com/products/categories"
+      );
+      const data = await response.json();
+      setCategoriesData(data);
+      setLoading(false);
+    } catch (error) {
+      setError(error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   const handleCategoryClick = (category) => {
     setSelectedCategory(category === selectedCategory ? null : category);
   };
 
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>Something went wrong. Please try again later.</p>;
+  }
+
   return (
     <div>
-      <ul className="category-list">
-        {categoriesData.map((category) => (
-          <li key={category}>
-            <button
-              className={selectedCategory === category ? "active-category" : null}
-              onClick={() => handleCategoryClick(category)}
+      {location.pathname.includes("/product/") ? null : (
+        <ul className="category-list">
+          {categoriesData.map((category) => (
+            <li
+              key={category}
+              className={
+                selectedCategory === category ? "active-category" : null
+              }
             >
-              {category}
-            </button>
-          </li>
-        ))}
-      </ul>
+              <button onClick={() => handleCategoryClick(category)}>
+                {category}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
