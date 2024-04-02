@@ -1,10 +1,10 @@
 import "./App.css";
 import Categories from "./components/Categories.js";
 import Products from "./components/Products.js";
-import ProductDetail from "./components/ProductDetail";
+import ProductDetail from "./pages/ProductDetail.js";
 import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import FavoritesPage from "./components/FavoritesPage";
+import FavoritesPage from "./pages/FavoritesPage.js";
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState(null);
