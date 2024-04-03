@@ -17,6 +17,7 @@ const Categories = ({ setSelectedCategory, selectedCategory }) => {
       setLoading(false);
     } catch (error) {
       setError(error);
+    } finally {
       setLoading(false);
     }
   };
