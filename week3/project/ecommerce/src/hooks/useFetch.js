@@ -14,6 +14,7 @@ const useFetch = (url) => {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
+        console.log(data);
         setData(data);
       } catch (err) {
         setError(err);
@@ -23,6 +24,7 @@ const useFetch = (url) => {
     };
 
     fetchData();
+   
   }, [url]);
 
   return { data, loading, error };
