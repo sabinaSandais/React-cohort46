@@ -1,14 +1,10 @@
 import "./App.css";
-import Categories from "./components/Categories.js";
-import Products from "./components/Products.js";
-import ProductDetail from "./pages/ProductDetail.js";
-import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import Home from "./pages/Home.js";
 import FavoritesPage from "./pages/FavoritesPage.js";
+import ProductDetail from "./pages/ProductDetail.js";
 
 function App() {
-  const [selectedCategory, setSelectedCategory] = useState(null);
-
   return (
     <Router>
       <div className="App">
@@ -27,18 +23,7 @@ function App() {
         </div>
 
         <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <Categories
-                  setSelectedCategory={setSelectedCategory}
-                  selectedCategory={selectedCategory}
-                />
-                <Products selectedCategory={selectedCategory} />
-              </>
-            }
-          />
+          <Route path="/" element={<Home />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/favorites" element={<FavoritesPage />} />
         </Routes>

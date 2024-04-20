@@ -1,70 +1,95 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import useFetch from "../hooks/useFetch";
 import { useFavorites } from "../FavoritesContext";
 import heartRegular from "../assets/heart-regular.svg";
 import heartSolid from "../assets/heart-solid.svg";
 
 const Products = ({ selectedCategory, favoritesOnly }) => {
-  const apiUrl = favoritesOnly
-    ? "https://fakestoreapi.com/products"
-    : selectedCategory
-    ? `https://fakestoreapi.com/products/category/${selectedCategory}`
-    : "https://fakestoreapi.com/products";
-
-  const { data: products, loading, error } = useFetch(apiUrl);
   const { favorites, toggleFavorite } = useFavorites();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        if (favoritesOnly) {
+          const favoriteUrls = favorites.map(
+            (id) => `https://fakestoreapi.com/products/${id}`
+          );
+          const responses = await Promise.all(
+            favoriteUrls.map((url) => fetch(url))
+          );
+          const data = await Promise.all(
+            responses.map((res) => {
+              if (!res.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return res.json();
+            })
+          );
+          setProducts(data);
+        } else {
+          const apiUrl = selectedCategory
+            ? `https://fakestoreapi.com/products/category/${selectedCategory}`
+            : "https://fakestoreapi.com/products";
+          const response = await fetch(apiUrl);
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          const data = await response.json();
+          setProducts(data);
+        }
+        setLoading(false);
+      } catch (error) {
+        setError("Something went wrong. Please try again later.");
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, [selectedCategory, favoritesOnly, favorites]);
 
   if (loading) {
     return <p>Loading...</p>;
   }
 
   if (error) {
-    return <p>Something went wrong. Please try again later.</p>;
+    return <p>{error}</p>;
   }
 
   return (
     <div>
       <ul className="product-list">
-        {products.map((product) => {
-          if (favoritesOnly && !favorites.includes(product.id)) {
-            return null;
-          }
-
-          return (
-            <li className="product" key={product.id}>
-              <div className="product-box">
-                <Link to={`/product/${product.id}`}>
-                  <div>
-                    <img
-                      className="product-image"
-                      src={product.image}
-                      alt={product.title}
-                    />
-                    <p>{product.title}</p>
-                  </div>
-                </Link>
-
-                <button
-                  onClick={() => toggleFavorite(product.id)}
-                  className="favorite-button"
-                >
+        {products.map((product) => (
+          <li className="product" key={product.id}>
+            <div className="product-box">
+              <Link to={`/product/${product.id}`}>
+                <div>
                   <img
-                    className="favorite-button-image"
-                    src={
-                      favorites.includes(product.id) ? heartSolid : heartRegular
-                    }
-                    alt={
-                      favorites.includes(product.id)
-                        ? "Solid"
-                        : "Regular"
-                    }
+                    className="product-image"
+                    src={product.image}
+                    alt={product.title}
                   />
-                </button>
-              </div>
-            </li>
-          );
-        })}
+                  <p>{product.title}</p>
+                </div>
+              </Link>
+
+              <button
+                onClick={() => toggleFavorite(product.id)}
+                className="favorite-button"
+              >
+                <img
+                  className="favorite-button-image"
+                  src={
+                    favorites.includes(product.id) ? heartSolid : heartRegular
+                  }
+                  alt={favorites.includes(product.id) ? "Solid" : "Regular"}
+                />
+              </button>
+            </div>
+          </li>
+        ))}
       </ul>
     </div>
   );

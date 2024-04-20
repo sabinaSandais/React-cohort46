@@ -32,22 +32,18 @@ const Categories = ({ setSelectedCategory, selectedCategory }) => {
 
   return (
     <div>
-      {location.pathname.includes("/product/") ? null : (
-        <ul className="category-list">
-          {categoriesData.map((category) => (
-            <li
-              key={category}
-              className={
-                selectedCategory === category ? "active-category" : null
-              }
-            >
-              <button onClick={() => handleCategoryClick(category)}>
-                {category}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul className="category-list">
+        {categoriesData.map((category) => (
+          <li
+            key={category}
+            className={selectedCategory === category ? "active-category" : null}
+          >
+            <button onClick={() => handleCategoryClick(category)}>
+              {category}
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
